@@ -54,13 +54,10 @@ export default function Auth() {
     let provider;
     if (name === "google") {
       provider = new GoogleAuthProvider();
-      console.log(provider);
     } else if (name === "github") {
       provider = new GithubAuthProvider();
-      console.log(provider);
     }
     const data = await signInWithPopup(authService, provider);
-    // console.log(data);
   };
 
   return (
