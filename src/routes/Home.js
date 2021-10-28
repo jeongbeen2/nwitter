@@ -1,21 +1,42 @@
 import { dbService } from "fbase";
-import { collection, addDoc } from "firebase/firestore";
-import React, { useState } from "react";
+import {
+  collection,
+  addDoc,
+  query,
+  onSnapshot,
+  orderBy,
+} from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 
-export default function Home() {
+export default function Home({ userObj }) {
   const [nweet, setNweet] = useState("");
+  const [nweets, setNweets] = useState([]);
+
+  useEffect(() => {
+    const q = query(
+      collection(dbService, "nweets"),
+      orderBy("createdAt", "desc")
+    );
+    onSnapshot(q, (snapshot) => {
+      const nweetArray = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setNweets(nweetArray);
+      console.log(nweetArray);
+    });
+  }, []);
+
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const docRef = await addDoc(collection(dbService, "nweets"), {
-        nweet,
+      await addDoc(collection(dbService, "nweets"), {
+        text: nweet,
         createdAt: Date.now(),
+        creatorid: userObj.uid,
       });
-      console.log(docRef);
       setNweet("");
-    } catch (error) {
-      console.error("####Error Message: ", error);
-    }
+    } catch (error) {}
   };
   const onChange = (e) => {
     const {
@@ -35,6 +56,13 @@ export default function Home() {
         />
         <input type="submit" value="Nweet" />
       </form>
+      <div>
+        {nweets.map((nweet) => (
+          <div key={nweet.id}>
+            <h4>{nweet.text}</h4>
+          </div>
+        ))}
+      </div>
     </>
   );
 }
