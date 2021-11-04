@@ -29,18 +29,11 @@ export default function Auth() {
     e.preventDefault();
 
     try {
-      let data;
       if (newAccount) {
-        data = await createUserWithEmailAndPassword(
-          authService,
-          email,
-          password
-        );
-        console.log(data);
+        await createUserWithEmailAndPassword(authService, email, password);
       } else {
-        data = await signInWithEmailAndPassword(authService, email, password);
+        await signInWithEmailAndPassword(authService, email, password);
       }
-      console.log(data);
     } catch (error) {
       setError(error.message);
     }
