@@ -44,6 +44,18 @@ export default function Home({ userObj }) {
     } = e;
     setNweet(value);
   };
+  const [image, setImage] = useState(null);
+  const onFileChange = (e) => {
+    const {
+      target: { files },
+    } = e;
+    const theFile = files[0];
+    const reader = new FileReader();
+    reader.onloadend = (finishedEvent) => {
+      setImage(finishedEvent.target.result);
+    };
+    reader.readAsDataURL(theFile);
+  };
   return (
     <>
       <form onSubmit={onSubmit}>
@@ -54,7 +66,9 @@ export default function Home({ userObj }) {
           placeholder="무슨생각중?"
           maxLength={120}
         />
+        <input type="file" accept="image/*" onChange={onFileChange} />
         <input type="submit" value="Nweet" />
+        <img src={image} alt="image" width="500" height="500" />
       </form>
       <div>
         {nweets.map((nweet) => (
