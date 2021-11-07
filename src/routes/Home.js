@@ -6,12 +6,13 @@ import {
   onSnapshot,
   orderBy,
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Nweet from "../components/Nweet";
 
 export default function Home({ userObj }) {
   const [nweet, setNweet] = useState("");
   const [nweets, setNweets] = useState([]);
+  const [attachment, setAttachment] = useState(null);
 
   useEffect(() => {
     const q = query(
@@ -44,7 +45,7 @@ export default function Home({ userObj }) {
     } = e;
     setNweet(value);
   };
-  const [image, setImage] = useState(null);
+
   const onFileChange = (e) => {
     const {
       target: { files },
@@ -52,10 +53,21 @@ export default function Home({ userObj }) {
     const theFile = files[0];
     const reader = new FileReader();
     reader.onloadend = (finishedEvent) => {
-      setImage(finishedEvent.target.result);
+      const {
+        currentTarget: { result },
+      } = finishedEvent;
+      setAttachment(result);
     };
     reader.readAsDataURL(theFile);
   };
+
+  const onClearAttachment = () => {
+    setAttachment(null);
+    fileInput.current.value = null;
+  };
+
+  const fileInput = useRef();
+
   return (
     <>
       <form onSubmit={onSubmit}>
@@ -66,9 +78,19 @@ export default function Home({ userObj }) {
           placeholder="무슨생각중?"
           maxLength={120}
         />
-        <input type="file" accept="image/*" onChange={onFileChange} />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={onFileChange}
+          ref={fileInput}
+        />
         <input type="submit" value="Nweet" />
-        <img src={image} alt="image" width="500" height="500" />
+        {attachment && (
+          <div>
+            <img src={attachment} alt="image" width="50px" height="50px" />
+            <button onClick={onClearAttachment}>Clear</button>
+          </div>
+        )}
       </form>
       <div>
         {nweets.map((nweet) => (
