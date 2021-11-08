@@ -35,14 +35,14 @@ export default function Home({ userObj }) {
     const fileRef = ref(storageService, `${userObj.uid}/${uuidv4()}`);
     const response = await uploadString(fileRef, attachment, "data_url");
     console.log(response);
-    // try {
-    //   await addDoc(collection(dbService, "nweets"), {
-    //     text: nweet,
-    //     createdAt: Date.now(),
-    //     creatorid: userObj.uid,
-    //   });
-    //   setNweet("");
-    // } catch (error) {}
+    try {
+      await addDoc(collection(dbService, "nweets"), {
+        text: nweet,
+        createdAt: Date.now(),
+        creatorid: userObj.uid,
+      });
+      setNweet("");
+    } catch (error) {}
   };
   const onChange = (e) => {
     const {
